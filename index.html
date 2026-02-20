@@ -278,7 +278,7 @@
         let csv = "\uFEFF"; 
         
         if (type === 'esai') {
-            csv += "Ranking;Nama Peserta;Keselarasan ide dan tema;Ketajaman analisis masalah;Pemecahan masalah dan Inovasi;Struktur dan Penggunaan Bahasa;Total Nilai\n";
+            csv += "Ranking;Nama Peserta;Keselarasan ide dan tema (1-10);Ketajaman analisis masalah (1-35);Pemecahan masalah dan Inovasi (1-45);Struktur dan Penggunaan Bahasa (1-10);Total Nilai\n";
             dataArr.forEach((r, i) => { csv += `${i+1};"${r.nama || ''}";${r.v1||0};${r.v2||0};${r.v3||0};${r.v4||0};${r.total||0}\n`; });
         } else {
             csv += "Ranking;Nama Peserta;Keselarasan tema;Kreativitas;Penyampaian Pesan;Pengembangan Karakter;Gaya Penulisan;Struktur Cerita;Total Nilai\n";
