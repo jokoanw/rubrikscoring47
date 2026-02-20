@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Penilaian FISCOM 2026</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    
     <style>
         /* Desain Minimalis & Elegan */
         :root {
@@ -90,7 +93,7 @@
                     <tbody id="lead-esai"><tr><td colspan="3" style="text-align:center; color:#999;">Memuat data...</td></tr></tbody>
                 </table>
             </div>
-            <button class="btn" onclick="downloadCSV('esai')" style="margin-top: 10px;">📥 Download Rekap (Excel/CSV)</button>
+            <button class="btn" onclick="downloadExcel('esai')" style="margin-top: 10px;">📥 Download Rekap (Excel)</button>
         </div>
     </div>
 
@@ -124,7 +127,7 @@
                     <tbody id="lead-cerpen"><tr><td colspan="3" style="text-align:center; color:#999;">Memuat data...</td></tr></tbody>
                 </table>
             </div>
-            <button class="btn" onclick="downloadCSV('cerpen')" style="margin-top: 10px;">📥 Download Rekap (Excel/CSV)</button>
+            <button class="btn" onclick="downloadExcel('cerpen')" style="margin-top: 10px;">📥 Download Rekap (Excel)</button>
         </div>
     </div>
 </div>
@@ -267,35 +270,78 @@
         window.dataCerpenExport = data;
     });
 
-    // Modifikasi Fungsi Download agar rapi di Excel
-    window.downloadCSV = function(type) {
+    // FUNGSI BARU: Ekspor langsung jadi file Excel profesional (.xlsx)
+    window.downloadExcel = async function(type) {
+        const workbook = new ExcelJS.Workbook();
+        const worksheet = workbook.addWorksheet(type === 'esai' ? 'Rekap Esai' : 'Rekap Cerpen');
+
         let dataObj = type === 'esai' ? window.dataEsaiExport : window.dataCerpenExport;
         let dataArr = Object.values(dataObj || {}).filter(item => item.nama || item.total > 0);
         dataArr.sort((a, b) => b.total - a.total);
 
-        // Tambahkan BOM "\uFEFF" agar Excel mendeteksi format dengan benar
-        // Gunakan separator ";" (titik koma) yang merupakan standar Excel di Indonesia
-        let csv = "\uFEFF"; 
-        
+        // Menentukan Judul Header
+        let headers = [];
         if (type === 'esai') {
-            csv += "Ranking;Nama Peserta;Keselarasan ide dan tema (1-10);Ketajaman analisis masalah (1-35);Pemecahan masalah dan Inovasi (1-45);Struktur dan Penggunaan Bahasa (1-10);Total Nilai\n";
-            dataArr.forEach((r, i) => { csv += `${i+1};"${r.nama || ''}";${r.v1||0};${r.v2||0};${r.v3||0};${r.v4||0};${r.total||0}\n`; });
+            headers = ["Ranking", "Nama Peserta", "Keselarasan ide dan tema", "Ketajaman analisis masalah", "Pemecahan masalah dan Inovasi", "Struktur dan Penggunaan Bahasa", "Total Nilai"];
         } else {
-            csv += "Ranking;Nama Peserta;Keselarasan tema;Kreativitas;Penyampaian Pesan;Pengembangan Karakter;Gaya Penulisan;Struktur Cerita;Total Nilai\n";
-            dataArr.forEach((r, i) => { csv += `${i+1};"${r.nama || ''}";${r.v1||0};${r.v2||0};${r.v3||0};${r.v4||0};${r.v5||0};${r.v6||0};${r.total||0}\n`; });
+            headers = ["Ranking", "Nama Peserta", "Keselarasan tema", "Kreativitas", "Penyampaian Pesan", "Pengembangan Karakter", "Gaya Penulisan", "Struktur Cerita", "Total Nilai"];
         }
-        
-        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement("a");
-        const url = URL.createObjectURL(blob);
-        
-        link.setAttribute("href", url);
-        link.setAttribute("download", `Rekap_${type.toUpperCase()}_FISCOM2026.csv`);
-        link.style.visibility = 'hidden';
-        
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+
+        // Tambahkan header ke tabel
+        worksheet.addRow(headers);
+
+        // Desain Header Tabel (Warna Biru Keren, Font Putih Bold, Alignment Tengah)
+        const headerRow = worksheet.getRow(1);
+        headerRow.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+        headerRow.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1F4E78' } }; // Warna biru profesional
+        headerRow.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+
+        // Masukkan data baris per baris
+        dataArr.forEach((r, i) => {
+            let rowData = [];
+            if (type === 'esai') {
+                rowData = [i+1, r.nama || '', r.v1||0, r.v2||0, r.v3||0, r.v4||0, r.total||0];
+            } else {
+                rowData = [i+1, r.nama || '', r.v1||0, r.v2||0, r.v3||0, r.v4||0, r.v5||0, r.v6||0, r.total||0];
+            }
+            worksheet.addRow(rowData);
+        });
+
+        // Menambahkan Grid (Border) dan merapikan letak tulisan
+        worksheet.eachRow({ includeEmpty: false }, function(row, rowNumber) {
+            row.eachCell({ includeEmpty: false }, function(cell, colNumber) {
+                // Tambah border tipis ke semua sel yang ada datanya
+                cell.border = {
+                    top: {style:'thin'}, left: {style:'thin'},
+                    bottom: {style:'thin'}, right: {style:'thin'}
+                };
+                
+                // Set alignment: Angka di tengah, Nama Peserta (kolom 2) rata kiri
+                if (rowNumber > 1) {
+                    if (colNumber === 2) {
+                        cell.alignment = { vertical: 'middle', horizontal: 'left' };
+                    } else {
+                        cell.alignment = { vertical: 'middle', horizontal: 'center' };
+                    }
+                }
+            });
+        });
+
+        // Autofit Lebar Kolom
+        worksheet.columns.forEach((column, index) => {
+            let maxLength = 0;
+            column.eachCell({ includeEmpty: true }, function(cell) {
+                let columnLength = cell.value ? cell.value.toString().length : 10;
+                if (columnLength > maxLength) { maxLength = columnLength; }
+            });
+            // Supaya nggak terlalu sempit, kita tambah sedikit spasi
+            column.width = maxLength < 12 ? 12 : maxLength + 2; 
+        });
+
+        // Proses download ke file .xlsx
+        const buffer = await workbook.xlsx.writeBuffer();
+        const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+        saveAs(blob, `Rekap_Nilai_${type.toUpperCase()}_FISCOM2026.xlsx`);
     }
 </script>
 </body>
