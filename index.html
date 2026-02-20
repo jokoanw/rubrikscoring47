@@ -15,7 +15,7 @@
             --text-muted: #666666;
         }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 20px; }
-        .container { max-width: 1100px; margin: 0 auto; background: var(--card-bg); padding: 40px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.04); }
+        .container { max-width: 1200px; margin: 0 auto; background: var(--card-bg); padding: 40px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.04); }
         h1 { text-align: center; margin-bottom: 5px; font-size: 28px; }
         h3 { text-align: center; color: var(--text-muted); margin-top: 0; margin-bottom: 30px; font-weight: 400; }
         .status { text-align: center; font-size: 13px; color: #28a745; margin-bottom: 20px; font-weight: 600; }
@@ -68,10 +68,10 @@
                 <thead>
                     <tr>
                         <th>Nama Peserta</th>
-                        <th>Ide & Tema (1-10)</th>
-                        <th>Analisis (1-35)</th>
-                        <th>Solusi (1-45)</th>
-                        <th>Bahasa (1-10)</th>
+                        <th>Keselarasan ide dan tema</th>
+                        <th>Ketajaman analisis masalah</th>
+                        <th>Pemecahan masalah dan Inovasi</th>
+                        <th>Struktur dan Penggunaan Bahasa</th>
                         <th>Hapus</th>
                     </tr>
                 </thead>
@@ -90,7 +90,7 @@
                     <tbody id="lead-esai"><tr><td colspan="3" style="text-align:center; color:#999;">Memuat data...</td></tr></tbody>
                 </table>
             </div>
-            <button class="btn" onclick="downloadCSV('esai')" style="margin-top: 10px;">📥 Download Rekap (CSV)</button>
+            <button class="btn" onclick="downloadCSV('esai')" style="margin-top: 10px;">📥 Download Rekap (Excel/CSV)</button>
         </div>
     </div>
 
@@ -100,12 +100,12 @@
                 <thead>
                     <tr>
                         <th>Nama Peserta</th>
-                        <th>Tema (1-20)</th>
-                        <th>Kreativitas (1-20)</th>
-                        <th>Pesan (1-20)</th>
-                        <th>Karakter (1-15)</th>
-                        <th>Gaya Tulis (1-15)</th>
-                        <th>Struktur (1-10)</th>
+                        <th>Keselarasan tema</th>
+                        <th>Kreativitas</th>
+                        <th>Penyampaian Pesan</th>
+                        <th>Pengembangan Karakter</th>
+                        <th>Gaya Penulisan</th>
+                        <th>Struktur Cerita</th>
                         <th>Hapus</th>
                     </tr>
                 </thead>
@@ -124,7 +124,7 @@
                     <tbody id="lead-cerpen"><tr><td colspan="3" style="text-align:center; color:#999;">Memuat data...</td></tr></tbody>
                 </table>
             </div>
-            <button class="btn" onclick="downloadCSV('cerpen')" style="margin-top: 10px;">📥 Download Rekap (CSV)</button>
+            <button class="btn" onclick="downloadCSV('cerpen')" style="margin-top: 10px;">📥 Download Rekap (Excel/CSV)</button>
         </div>
     </div>
 </div>
@@ -142,7 +142,6 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getDatabase, ref, update, onValue, push, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-    // Konfigurasi Database FISCOM milikmu
     const firebaseConfig = {
       apiKey: "AIzaSyDZPq9bC3kD9iWDDSw7nZL1I2oYDU3IJJ8",
       authDomain: "rubricfiscom47.firebaseapp.com",
@@ -156,12 +155,10 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // Fungsi Tambah Baris Kosong
     window.firebaseAdd = function(type) {
         push(ref(db, type), { nama: "", total: 0 });
     };
 
-    // Fungsi Update Otomatis saat mengetik
     window.firebaseUpdate = function(type, id) {
         const tr = document.querySelector(`tr[data-id="${id}"]`);
         if(!tr) return;
@@ -173,18 +170,15 @@
         let updateObj = { nama, total };
         vals.forEach((v, i) => updateObj[`v${i+1}`] = v);
 
-        // Langsung simpan ke cloud
         update(ref(db, `${type}/${id}`), updateObj);
     };
 
-    // Fungsi Hapus Peserta
     window.firebaseDelete = function(type, id) {
         if(confirm("Yakin ingin menghapus peserta ini?")) {
             remove(ref(db, `${type}/${id}`));
         }
     };
 
-    // Sinkronisasi Tabel Input (Mencegah kursor hilang saat orang lain update)
     window.syncTable = function(type, dataObj) {
         const tbody = document.getElementById(`tbody-${type}`);
         const existingIds = Array.from(tbody.children).map(tr => tr.dataset.id);
@@ -204,27 +198,26 @@
                 if (type === 'esai') {
                     tr.innerHTML = `
                         <td><input type="text" placeholder="Ketik nama..." value="${data.nama || ''}" oninput="firebaseUpdate('${type}', '${id}')"></td>
-                        <td><input type="number" min="0" max="10" value="${data.v1 || ''}" oninput="firebaseUpdate('${type}', '${id}')"></td>
-                        <td><input type="number" min="0" max="35" value="${data.v2 || ''}" oninput="firebaseUpdate('${type}', '${id}')"></td>
-                        <td><input type="number" min="0" max="45" value="${data.v3 || ''}" oninput="firebaseUpdate('${type}', '${id}')"></td>
-                        <td><input type="number" min="0" max="10" value="${data.v4 || ''}" oninput="firebaseUpdate('${type}', '${id}')"></td>
+                        <td><input type="number" placeholder="Nilai..." value="${data.v1 || ''}" oninput="firebaseUpdate('${type}', '${id}')"></td>
+                        <td><input type="number" placeholder="Nilai..." value="${data.v2 || ''}" oninput="firebaseUpdate('${type}', '${id}')"></td>
+                        <td><input type="number" placeholder="Nilai..." value="${data.v3 || ''}" oninput="firebaseUpdate('${type}', '${id}')"></td>
+                        <td><input type="number" placeholder="Nilai..." value="${data.v4 || ''}" oninput="firebaseUpdate('${type}', '${id}')"></td>
                         <td><button class="btn-del" onclick="firebaseDelete('${type}', '${id}')">❌</button></td>
                     `;
                 } else {
                     tr.innerHTML = `
                         <td><input type="text" placeholder="Ketik nama..." value="${data.nama || ''}" oninput="firebaseUpdate('${type}', '${id}')"></td>
-                        <td><input type="number" min="0" max="20" value="${data.v1 || ''}" oninput="firebaseUpdate('${type}', '${id}')"></td>
-                        <td><input type="number" min="0" max="20" value="${data.v2 || ''}" oninput="firebaseUpdate('${type}', '${id}')"></td>
-                        <td><input type="number" min="0" max="20" value="${data.v3 || ''}" oninput="firebaseUpdate('${type}', '${id}')"></td>
-                        <td><input type="number" min="0" max="15" value="${data.v4 || ''}" oninput="firebaseUpdate('${type}', '${id}')"></td>
-                        <td><input type="number" min="0" max="15" value="${data.v5 || ''}" oninput="firebaseUpdate('${type}', '${id}')"></td>
-                        <td><input type="number" min="0" max="10" value="${data.v6 || ''}" oninput="firebaseUpdate('${type}', '${id}')"></td>
+                        <td><input type="number" placeholder="Nilai..." value="${data.v1 || ''}" oninput="firebaseUpdate('${type}', '${id}')"></td>
+                        <td><input type="number" placeholder="Nilai..." value="${data.v2 || ''}" oninput="firebaseUpdate('${type}', '${id}')"></td>
+                        <td><input type="number" placeholder="Nilai..." value="${data.v3 || ''}" oninput="firebaseUpdate('${type}', '${id}')"></td>
+                        <td><input type="number" placeholder="Nilai..." value="${data.v4 || ''}" oninput="firebaseUpdate('${type}', '${id}')"></td>
+                        <td><input type="number" placeholder="Nilai..." value="${data.v5 || ''}" oninput="firebaseUpdate('${type}', '${id}')"></td>
+                        <td><input type="number" placeholder="Nilai..." value="${data.v6 || ''}" oninput="firebaseUpdate('${type}', '${id}')"></td>
                         <td><button class="btn-del" onclick="firebaseDelete('${type}', '${id}')">❌</button></td>
                     `;
                 }
                 tbody.appendChild(tr);
             } else {
-                // Jangan timpa tulisan kalau user sedang fokus mengetik di kotak tersebut
                 if (!tr.contains(document.activeElement)) {
                     const inputs = tr.querySelectorAll('input');
                     inputs[0].value = data.nama || '';
@@ -238,7 +231,6 @@
         });
     };
 
-    // Sinkronisasi Leaderboard Otomatis
     window.syncLeaderboard = function(type, dataObj) {
         const tbody = document.getElementById(`lead-${type}`);
         const dataArr = Object.values(dataObj || {}).filter(item => item.nama || item.total > 0);
@@ -261,7 +253,6 @@
         });
     };
 
-    // Menangkap Data dari Cloud (Real-Time Listeners)
     onValue(ref(db, 'esai'), (snap) => {
         const data = snap.val() || {};
         syncTable('esai', data);
@@ -276,25 +267,32 @@
         window.dataCerpenExport = data;
     });
 
-    // Fungsi Download Excel/CSV
+    // Modifikasi Fungsi Download agar rapi di Excel
     window.downloadCSV = function(type) {
         let dataObj = type === 'esai' ? window.dataEsaiExport : window.dataCerpenExport;
         let dataArr = Object.values(dataObj || {}).filter(item => item.nama || item.total > 0);
         dataArr.sort((a, b) => b.total - a.total);
 
-        let csv = "data:text/csv;charset=utf-8,";
+        // Tambahkan BOM "\uFEFF" agar Excel mendeteksi format dengan benar
+        // Gunakan separator ";" (titik koma) yang merupakan standar Excel di Indonesia
+        let csv = "\uFEFF"; 
+        
         if (type === 'esai') {
-            csv += "Ranking,Nama Peserta,Ide & Tema,Analisis,Pemecahan Masalah,Bahasa,Total Nilai\n";
-            dataArr.forEach((r, i) => { csv += `${i+1},"${r.nama || ''}",${r.v1||0},${r.v2||0},${r.v3||0},${r.v4||0},${r.total||0}\n`; });
+            csv += "Ranking;Nama Peserta;Keselarasan ide dan tema;Ketajaman analisis masalah;Pemecahan masalah dan Inovasi;Struktur dan Penggunaan Bahasa;Total Nilai\n";
+            dataArr.forEach((r, i) => { csv += `${i+1};"${r.nama || ''}";${r.v1||0};${r.v2||0};${r.v3||0};${r.v4||0};${r.total||0}\n`; });
         } else {
-            csv += "Ranking,Nama Peserta,Tema,Kreativitas,Pesan,Karakter,Gaya Tulis,Struktur,Total Nilai\n";
-            dataArr.forEach((r, i) => { csv += `${i+1},"${r.nama || ''}",${r.v1||0},${r.v2||0},${r.v3||0},${r.v4||0},${r.v5||0},${r.v6||0},${r.total||0}\n`; });
+            csv += "Ranking;Nama Peserta;Keselarasan tema;Kreativitas;Penyampaian Pesan;Pengembangan Karakter;Gaya Penulisan;Struktur Cerita;Total Nilai\n";
+            dataArr.forEach((r, i) => { csv += `${i+1};"${r.nama || ''}";${r.v1||0};${r.v2||0};${r.v3||0};${r.v4||0};${r.v5||0};${r.v6||0};${r.total||0}\n`; });
         }
         
-        const encodedUri = encodeURI(csv);
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
         const link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
+        const url = URL.createObjectURL(blob);
+        
+        link.setAttribute("href", url);
         link.setAttribute("download", `Rekap_${type.toUpperCase()}_FISCOM2026.csv`);
+        link.style.visibility = 'hidden';
+        
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
