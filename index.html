@@ -94,7 +94,7 @@
             <div class="table-wrapper" style="background: white;">
                 <table>
                     <thead>
-                        <tr><th>Ranking</th><th>Nama Peserta</th><th>Total Juri 1</th><th>Total Juri 2</th><th>Total Juri 3</th><th>TOTAL AKHIR</th></tr>
+                        <tr><th>Ranking</th><th>Nama Peserta</th><th>Total Juri 1</th><th>Total Juri 2</th><th>Total Juri 3</th><th>RATA-RATA AKHIR</th></tr>
                     </thead>
                     <tbody id="lead-esai"><tr><td colspan="6" style="text-align:center; color:#999;">Memuat data...</td></tr></tbody>
                 </table>
@@ -128,7 +128,7 @@
             <div class="table-wrapper" style="background: white;">
                 <table>
                     <thead>
-                        <tr><th>Ranking</th><th>Nama Peserta</th><th>Total Juri 1</th><th>Total Juri 2</th><th>Total Juri 3</th><th>TOTAL AKHIR</th></tr>
+                        <tr><th>Ranking</th><th>Nama Peserta</th><th>Total Juri 1</th><th>Total Juri 2</th><th>Total Juri 3</th><th>RATA-RATA AKHIR</th></tr>
                     </thead>
                     <tbody id="lead-cerpen"><tr><td colspan="6" style="text-align:center; color:#999;">Memuat data...</td></tr></tbody>
                 </table>
@@ -168,7 +168,6 @@
     window.activeJuri = 'juri1';
     window.changeJuri = function(juri) {
         window.activeJuri = juri;
-        // Render ulang tabel saat ganti juri
         syncTable('esai', window.dataEsaiExport);
         syncTable('cerpen', window.dataCerpenExport);
     };
@@ -186,11 +185,11 @@
         const total = vals.reduce((a, b) => a + b, 0);
 
         let updates = {};
-        updates[`${type}/${id}/nama`] = nama; // Sinkronisasi Nama untuk semua juri
+        updates[`${type}/${id}/nama`] = nama; 
         
         let juriData = { total };
         vals.forEach((v, i) => juriData[`v${i+1}`] = v);
-        updates[`${type}/${id}/${window.activeJuri}`] = juriData; // Simpan nilai spesifik ke juri yg aktif
+        updates[`${type}/${id}/${window.activeJuri}`] = juriData;
 
         update(ref(db), updates);
     };
@@ -210,7 +209,7 @@
 
         newIds.forEach(id => {
             const rowData = dataObj[id];
-            const juriData = rowData[window.activeJuri] || {}; // Ambil data khusus juri yang sedang dipilih
+            const juriData = rowData[window.activeJuri] || {}; 
             let tr = tbody.querySelector(`tr[data-id="${id}"]`);
             
             if (!tr) {
@@ -260,7 +259,8 @@
             let j1 = item.juri1?.total || 0;
             let j2 = item.juri2?.total || 0;
             let j3 = item.juri3?.total || 0;
-            let totalAkhir = j1 + j2 + j3;
+            // Rata-rata dari 3 Juri (Dibulatkan 2 angka di belakang koma biar rapi)
+            let totalAkhir = Number(((j1 + j2 + j3) / 3).toFixed(2));
             return { nama: item.nama, j1, j2, j3, totalAkhir };
         }).filter(item => item.nama || item.totalAkhir > 0);
 
@@ -300,7 +300,7 @@
         syncLeaderboard('cerpen', data);
     });
 
-    // EKSPOR EXCEL PROFESIONAL (MENCAKUP SEMUA JURI)
+    // EKSPOR EXCEL PROFESIONAL
     window.downloadExcel = async function(type) {
         const workbook = new ExcelJS.Workbook();
         const worksheet = workbook.addWorksheet(type === 'esai' ? 'Rekap Esai' : 'Rekap Cerpen');
@@ -311,11 +311,13 @@
             let j1 = item.juri1?.total || 0;
             let j2 = item.juri2?.total || 0;
             let j3 = item.juri3?.total || 0;
-            return { nama: item.nama, j1, j2, j3, totalAkhir: j1 + j2 + j3 };
+            let totalAkhir = Number(((j1 + j2 + j3) / 3).toFixed(2));
+            return { nama: item.nama, j1, j2, j3, totalAkhir };
         }).filter(item => item.nama || item.totalAkhir > 0);
+        
         dataArr.sort((a, b) => b.totalAkhir - a.totalAkhir);
 
-        let headers = ["Ranking", "Nama Peserta", "Total Juri 1", "Total Juri 2", "Total Juri 3", "TOTAL AKHIR"];
+        let headers = ["Ranking", "Nama Peserta", "Total Juri 1", "Total Juri 2", "Total Juri 3", "RATA-RATA AKHIR"];
         worksheet.addRow(headers);
 
         const headerRow = worksheet.getRow(1);
