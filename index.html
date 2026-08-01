@@ -3,50 +3,247 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Penilaian FISCOM MAFAZA</title>
+    <title>Penilaian FISCOM MAFAZA 2026</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     
     <style>
-        :root { --primary: #000000; --bg-color: #fafafa; --card-bg: #ffffff; --border: #eaeaea; --text-main: #333333; --text-muted: #666666; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 20px; }
-        .container { max-width: 1200px; margin: 0 auto; background: var(--card-bg); padding: 40px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.04); }
-        h1 { text-align: center; margin-bottom: 5px; font-size: 28px; }
-        h3 { text-align: center; color: var(--text-muted); margin-top: 0; margin-bottom: 20px; font-weight: 400; }
-        .status { text-align: center; font-size: 13px; color: #28a745; margin-bottom: 20px; font-weight: 600; }
-        
-        /* Desain Switcher Juri */
-        .juri-selector-container { background: #f0f8ff; border: 1px solid #cce5ff; padding: 15px; border-radius: 8px; text-align: center; margin-bottom: 30px; }
-        .juri-selector-container select { font-size: 16px; padding: 8px 15px; border-radius: 6px; font-weight: bold; border: 1px solid #000; cursor: pointer; }
-        
-        .tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid var(--border); padding-bottom: 15px; }
-        .tab-btn { padding: 10px 24px; border: none; background: transparent; font-size: 16px; cursor: pointer; border-radius: 8px; font-weight: 600; color: var(--text-muted); transition: 0.2s; }
-        .tab-btn.active { background: var(--primary); color: #fff; }
-        .tab-btn:hover:not(.active) { background: #f0f0f0; }
+        /* Mengadopsi palet warna dan efek Glassmorphism ala iOS/macOS modern */
+        :root { 
+            --accent: #0071e3;
+            --accent-hover: #0077ED;
+            --text-main: #1d1d1f; 
+            --text-muted: #86868b; 
+            --glass-bg: rgba(255, 255, 255, 0.65);
+            --glass-border: rgba(255, 255, 255, 0.4);
+            --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.05);
+            --danger: #ff3b30;
+        }
 
-        .section { display: none; animation: fadeIn 0.3s; }
+        /* Background animasi mesh gradient yang soft */
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            color: var(--text-main); 
+            margin: 0; 
+            padding: 40px 20px; 
+            min-height: 100vh;
+            background: linear-gradient(120deg, #e0c3fc 0%, #8ec5fc 100%);
+            background-size: 200% 200%;
+            animation: gradientMove 15s ease infinite;
+        }
+
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Container utama dengan efek Kaca (Glassmorphism) */
+        .container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            background: var(--glass-bg); 
+            backdrop-filter: blur(24px); 
+            -webkit-backdrop-filter: blur(24px);
+            padding: 50px; 
+            border-radius: 24px; 
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--glass-shadow); 
+        }
+
+        /* Typography */
+        h1 { text-align: center; margin-bottom: 5px; font-size: 32px; font-weight: 700; letter-spacing: -0.5px; }
+        h3 { text-align: center; color: var(--text-muted); margin-top: 0; margin-bottom: 25px; font-weight: 500; font-size: 18px; }
+        
+        .status-badge { 
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(52, 199, 89, 0.15);
+            color: #248a3d;
+            padding: 6px 16px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 600;
+            margin: 0 auto 30px auto;
+        }
+        .status-badge::before {
+            content: '';
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #34c759;
+            border-radius: 50%;
+            margin-right: 8px;
+            box-shadow: 0 0 8px rgba(52, 199, 89, 0.5);
+        }
+        .status-container { text-align: center; }
+
+        /* Juri Selector bergaya Card iOS */
+        .juri-selector-container { 
+            background: rgba(255, 255, 255, 0.5); 
+            border: 1px solid var(--glass-border); 
+            padding: 20px; 
+            border-radius: 16px; 
+            text-align: center; 
+            margin-bottom: 40px; 
+            backdrop-filter: blur(10px);
+        }
+        .juri-selector-container select { 
+            font-size: 15px; 
+            padding: 10px 20px; 
+            border-radius: 12px; 
+            font-weight: 600; 
+            border: 1px solid rgba(0,0,0,0.1); 
+            cursor: pointer; 
+            background: #fff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        .juri-selector-container select:focus {
+            box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.2);
+            border-color: var(--accent);
+        }
+
+        /* Tabs ala Segmented Control Apple */
+        .tabs { 
+            display: flex; 
+            justify-content: center;
+            gap: 10px; 
+            margin-bottom: 30px; 
+            background: rgba(0, 0, 0, 0.05);
+            padding: 6px;
+            border-radius: 14px;
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .tab-btn { 
+            padding: 10px 24px; 
+            border: none; 
+            background: transparent; 
+            font-size: 15px; 
+            cursor: pointer; 
+            border-radius: 10px; 
+            font-weight: 600; 
+            color: var(--text-muted); 
+            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1); 
+        }
+        .tab-btn.active { 
+            background: #ffffff; 
+            color: var(--text-main); 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        /* Transisi Halaman */
+        .section { display: none; animation: blurFadeIn 0.4s cubic-bezier(0.25, 1, 0.5, 1); }
         .section.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes blurFadeIn { 
+            from { opacity: 0; transform: translateY(10px) scale(0.98); filter: blur(4px); } 
+            to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); } 
+        }
 
-        .table-wrapper { overflow-x: auto; margin-bottom: 15px; border-radius: 8px; border: 1px solid var(--border); }
-        table { width: 100%; border-collapse: collapse; white-space: nowrap; }
-        th, td { border-bottom: 1px solid var(--border); padding: 12px 14px; text-align: left; }
-        th { background: #fbfbfb; font-weight: 600; color: var(--text-main); font-size: 14px; }
-        td { border-right: 1px dashed var(--border); }
-        td:last-child { border-right: none; text-align: center;}
+        /* Tabel Estetika Kaca */
+        .table-wrapper { 
+            overflow-x: auto; 
+            margin-bottom: 25px; 
+            border-radius: 16px; 
+            border: 1px solid var(--glass-border); 
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(10px);
+        }
+        table { width: 100%; border-collapse: separate; border-spacing: 0; white-space: nowrap; }
+        th, td { padding: 16px; text-align: left; border-bottom: 1px solid rgba(0,0,0,0.05); }
+        th { 
+            background: rgba(255, 255, 255, 0.6); 
+            font-weight: 600; 
+            color: var(--text-muted); 
+            font-size: 12px; 
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        td { transition: background 0.2s; }
+        tr:hover td { background: rgba(255, 255, 255, 0.6); }
+        td:last-child { text-align: center; }
         
-        input[type="text"], input[type="number"] { width: 100%; border: none; outline: none; background: transparent; font-size: 15px; font-family: inherit; }
-        input[type="number"] { min-width: 60px; }
-        input:focus { background-color: #e6f2ff; border-radius: 4px; padding: 4px; margin: -4px; }
+        /* Input Form */
+        input[type="text"], input[type="number"] { 
+            width: 90%; 
+            border: 1px solid transparent; 
+            background: rgba(255, 255, 255, 0.5); 
+            font-size: 15px; 
+            font-family: inherit; 
+            padding: 10px 12px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        input[type="number"] { min-width: 70px; text-align: center; }
+        input:focus { 
+            background: #fff; 
+            border-color: var(--accent); 
+            box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.15); 
+            outline: none; 
+        }
         
-        .btn { background: var(--primary); color: #fff; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; transition: 0.2s; }
-        .btn:hover { opacity: 0.8; }
-        .btn-outline { background: #fff; color: var(--primary); border: 1px solid var(--primary); }
-        .btn-outline:hover { background: var(--primary); color: #fff; }
-        .btn-del { background: none; border: none; cursor: pointer; color: red; font-size: 16px; }
+        /* Tombol */
+        .btn { 
+            background: var(--text-main); 
+            color: #fff; 
+            border: none; 
+            padding: 12px 24px; 
+            border-radius: 999px; 
+            cursor: pointer; 
+            font-size: 14px; 
+            font-weight: 600; 
+            transition: all 0.2s; 
+            box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+        }
+        .btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
+        .btn:active { transform: translateY(1px); }
+        
+        .btn-outline { 
+            background: rgba(255, 255, 255, 0.6); 
+            color: var(--text-main); 
+            border: 1px solid rgba(0,0,0,0.1); 
+            backdrop-filter: blur(5px);
+        }
+        .btn-outline:hover { background: #fff; }
+        
+        .btn-del { 
+            background: rgba(255, 59, 48, 0.1); 
+            border: none; 
+            cursor: pointer; 
+            color: var(--danger); 
+            font-size: 14px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        .btn-del:hover { background: var(--danger); color: #fff; }
 
-        .leaderboard { margin-top: 50px; background: #fafafa; padding: 25px; border-radius: 12px; border: 1px solid var(--border); }
-        .leaderboard h2 { margin-top: 0; font-size: 20px; }
+        /* Leaderboard */
+        .leaderboard { 
+            margin-top: 60px; 
+            background: rgba(255, 255, 255, 0.3); 
+            padding: 30px; 
+            border-radius: 20px; 
+            border: 1px solid var(--glass-border); 
+        }
+        .leaderboard h2 { margin-top: 0; font-size: 22px; font-weight: 700; }
+        .leaderboard .table-wrapper { background: rgba(255,255,255,0.7); border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
+
+        /* Footer Credit Tuan Afdhi */
+        .footer-credit {
+            text-align: center;
+            margin-top: 40px;
+            font-size: 11px;
+            color: rgba(0, 0, 0, 0.4);
+            font-weight: 600;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+        }
     </style>
 </head>
 <body>
@@ -54,24 +251,28 @@
 <div class="container">
     <h1>Sistem Database Penilaian</h1>
     <h3>Fattimatuzzahra Islamic Competition (FISCOM)</h3>
-    <div class="status">🟢 Tersinkronisasi secara Real-Time dengan Cloud</div>
-    <h3>Terjadi Kendala Web, Hubungi AFDHI</h3> 
+    
+    <div class="status-container">
+        <div class="status-badge">Tersinkronisasi Real-Time dengan Cloud</div>
+    </div>
+    
+    <p style="text-align: center; font-size: 12px; color: var(--danger); font-weight: 600; margin-top: -15px; margin-bottom: 30px;">
+        Terjadi Kendala Web? Hubungi Panitia
+    </p> 
 
     <div class="juri-selector-container">
-        <label style="font-size: 16px; margin-right: 10px;">👤 <b>Anda sedang menilai sebagai:</b></label>
+        <label style="font-size: 15px; margin-right: 12px; color: var(--text-main);">👤 <b>Anda menilai sebagai:</b></label>
         <select id="juri-selector" onchange="changeJuri(this.value)">
             <option value="juri1">JURI 1</option>
             <option value="juri2">JURI 2</option>
             <option value="juri3">JURI 3</option>
         </select>
-        <p style="margin: 5px 0 0 0; font-size: 13px; color: #666;">Nilai yang Anda masukkan otomatis tersimpan ke akun Juri yang dipilih.</p>
+        <p style="margin: 12px 0 0 0; font-size: 13px; color: var(--text-muted);">Nilai yang dimasukkan otomatis tersimpan ke akun Juri yang dipilih.</p>
     </div>
 
-    <div class="absolute bottom-4 sm:bottom-6 w-full flex justify-center z-10 px-4"> <p class="text-[9px] sm:text-[10px] text-slate-400/80 font-semibold tracking-[0.2em] uppercase text-center">Hak Cipta © 2026 FISCOM. Sistem oleh AFDHI ABDILAH.</p> </div>
     <div class="tabs">
-        
-        <button class="tab-btn active" onclick="switchTab(event, 'esai')">📝 Penilaian Esai</button>
-        <button class="tab-btn" onclick="switchTab(event, 'cerpen')">📖 Penilaian Cerpen</button>
+        <button class="tab-btn active" onclick="switchTab(event, 'esai')">📝 Esai</button>
+        <button class="tab-btn" onclick="switchTab(event, 'cerpen')">📖 Cerpen</button>
     </div>
 
     <div id="esai" class="section active">
@@ -80,29 +281,29 @@
                 <thead>
                     <tr>
                         <th>Nama Peserta</th>
-                        <th>Keselarasan ide dan tema (1-10)</th>
-                        <th>Ketajaman analisis masalah (1-35)</th>
-                        <th>Pemecahan masalah dan Inovasi (1-45)</th>
-                        <th>Struktur dan Penggunaan Bahasa (1-10)</th>
-                        <th>Hapus</th>
+                        <th>Ide & Tema (1-10)</th>
+                        <th>Analisis (1-35)</th>
+                        <th>Pemecahan & Inovasi (1-45)</th>
+                        <th>Struktur Bahasa (1-10)</th>
+                        <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody id="tbody-esai"></tbody>
             </table>
         </div>
-        <button class="btn btn-outline" onclick="firebaseAdd('esai')">+ Tambah Peserta Baru</button>
+        <button class="btn btn-outline" onclick="firebaseAdd('esai')">+ Tambah Peserta</button>
 
         <div class="leaderboard">
-            <h2>🏆 Leaderboard Esai (Gabungan 3 Juri)</h2>
-            <div class="table-wrapper" style="background: white;">
+            <h2>🏆 Leaderboard Esai</h2>
+            <div class="table-wrapper">
                 <table>
                     <thead>
-                        <tr><th>Ranking</th><th>Nama Peserta</th><th>Total Juri 1</th><th>Total Juri 2</th><th>Total Juri 3</th><th>RATA-RATA AKHIR</th></tr>
+                        <tr><th>Rank</th><th>Nama Peserta</th><th>Juri 1</th><th>Juri 2</th><th>Juri 3</th><th>RATA-RATA</th></tr>
                     </thead>
-                    <tbody id="lead-esai"><tr><td colspan="6" style="text-align:center; color:#999;">Memuat data...</td></tr></tbody>
+                    <tbody id="lead-esai"><tr><td colspan="6" style="text-align:center; color:#999; padding: 30px;">Memuat data...</td></tr></tbody>
                 </table>
             </div>
-            <button class="btn" onclick="downloadExcel('esai')" style="margin-top: 10px;">📥 Download Rekap (Excel)</button>
+            <button class="btn" onclick="downloadExcel('esai')">📥 Ekspor Excel</button>
         </div>
     </div>
 
@@ -112,33 +313,39 @@
                 <thead>
                     <tr>
                         <th>Nama Peserta</th>
-                        <th>Keselarasan tema (1-20)</th>
+                        <th>Tema (1-20)</th>
                         <th>Kreativitas (1-20)</th>
-                        <th>Penyampaian Pesan (1-20)</th>
-                        <th>Pengembangan Karakter (1-15)</th>
+                        <th>Pesan (1-20)</th>
+                        <th>Karakter (1-15)</th>
                         <th>Gaya Penulisan (1-15)</th>
-                        <th>Struktur Cerita (1-10)</th>
-                        <th>Hapus</th>
+                        <th>Struktur (1-10)</th>
+                        <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody id="tbody-cerpen"></tbody>
             </table>
         </div>
-        <button class="btn btn-outline" onclick="firebaseAdd('cerpen')">+ Tambah Peserta Baru</button>
+        <button class="btn btn-outline" onclick="firebaseAdd('cerpen')">+ Tambah Peserta</button>
 
         <div class="leaderboard">
-            <h2>🏆 Leaderboard Cerpen (Gabungan 3 Juri)</h2>
-            <div class="table-wrapper" style="background: white;">
+            <h2>🏆 Leaderboard Cerpen</h2>
+            <div class="table-wrapper">
                 <table>
                     <thead>
-                        <tr><th>Ranking</th><th>Nama Peserta</th><th>Total Juri 1</th><th>Total Juri 2</th><th>Total Juri 3</th><th>RATA-RATA AKHIR</th></tr>
+                        <tr><th>Rank</th><th>Nama Peserta</th><th>Juri 1</th><th>Juri 2</th><th>Juri 3</th><th>RATA-RATA</th></tr>
                     </thead>
-                    <tbody id="lead-cerpen"><tr><td colspan="6" style="text-align:center; color:#999;">Memuat data...</td></tr></tbody>
+                    <tbody id="lead-cerpen"><tr><td colspan="6" style="text-align:center; color:#999; padding: 30px;">Memuat data...</td></tr></tbody>
                 </table>
             </div>
-            <button class="btn" onclick="downloadExcel('cerpen')" style="margin-top: 10px;">📥 Download Rekap (Excel)</button>
+            <button class="btn" onclick="downloadExcel('cerpen')">📥 Ekspor Excel</button>
         </div>
     </div>
+    
+    <!-- Footer Credit yang Elegan -->
+    <div class="footer-credit">
+        Hak Cipta &copy; 2026 FISCOM. Sistem oleh Afdhi Abdilah.
+    </div>
+
 </div>
 
 <script>
@@ -167,7 +374,6 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // Default Juri
     window.activeJuri = 'juri1';
     window.changeJuri = function(juri) {
         window.activeJuri = juri;
@@ -225,7 +431,7 @@
                         <td><input type="number" value="${juriData.v2 || ''}" oninput="firebaseUpdate('${type}', '${id}')"></td>
                         <td><input type="number" value="${juriData.v3 || ''}" oninput="firebaseUpdate('${type}', '${id}')"></td>
                         <td><input type="number" value="${juriData.v4 || ''}" oninput="firebaseUpdate('${type}', '${id}')"></td>
-                        <td><button class="btn-del" onclick="firebaseDelete('${type}', '${id}')">❌</button></td>
+                        <td><button class="btn-del" onclick="firebaseDelete('${type}', '${id}')">Hapus</button></td>
                     `;
                 } else {
                     tr.innerHTML = `
@@ -236,7 +442,7 @@
                         <td><input type="number" value="${juriData.v4 || ''}" oninput="firebaseUpdate('${type}', '${id}')"></td>
                         <td><input type="number" value="${juriData.v5 || ''}" oninput="firebaseUpdate('${type}', '${id}')"></td>
                         <td><input type="number" value="${juriData.v6 || ''}" oninput="firebaseUpdate('${type}', '${id}')"></td>
-                        <td><button class="btn-del" onclick="firebaseDelete('${type}', '${id}')">❌</button></td>
+                        <td><button class="btn-del" onclick="firebaseDelete('${type}', '${id}')">Hapus</button></td>
                     `;
                 }
                 tbody.appendChild(tr);
@@ -262,7 +468,6 @@
             let j1 = item.juri1?.total || 0;
             let j2 = item.juri2?.total || 0;
             let j3 = item.juri3?.total || 0;
-            // Rata-rata dari 3 Juri (Dibulatkan 2 angka di belakang koma biar rapi)
             let totalAkhir = Number(((j1 + j2 + j3) / 3).toFixed(2));
             return { nama: item.nama, j1, j2, j3, totalAkhir };
         }).filter(item => item.nama || item.totalAkhir > 0);
@@ -270,7 +475,7 @@
         dataArr.sort((a, b) => b.totalAkhir - a.totalAkhir); 
         
         if (dataArr.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#999;">Belum ada data</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#999; padding:30px;">Belum ada data peserta</td></tr>`;
             return;
         }
         
@@ -283,7 +488,7 @@
                     <td>${item.j1}</td>
                     <td>${item.j2}</td>
                     <td>${item.j3}</td>
-                    <td><b style="color:green; font-size:16px;">${item.totalAkhir}</b></td>
+                    <td><b style="color:var(--accent); font-size:16px;">${item.totalAkhir}</b></td>
                 </tr>
             `;
         });
@@ -303,7 +508,6 @@
         syncLeaderboard('cerpen', data);
     });
 
-    // EKSPOR EXCEL PROFESIONAL
     window.downloadExcel = async function(type) {
         const workbook = new ExcelJS.Workbook();
         const worksheet = workbook.addWorksheet(type === 'esai' ? 'Rekap Esai' : 'Rekap Cerpen');
@@ -325,7 +529,7 @@
 
         const headerRow = worksheet.getRow(1);
         headerRow.font = { bold: true, color: { argb: 'FFFFFFFF' } };
-        headerRow.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1F4E78' } }; 
+        headerRow.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF0071E3' } }; 
         headerRow.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
 
         dataArr.forEach((r, i) => {
