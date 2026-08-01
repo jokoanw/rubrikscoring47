@@ -51,20 +51,48 @@
             box-shadow: var(--glass-shadow); 
         }
 
-        /* --- PENGATURAN LOGO MAFAZA & PAR --- */
+        /* --- UPGRADE: PENGATURAN LOGO ALA ICON iOS --- */
         .logo-container {
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 25px; /* Jarak antara logo kiri dan kanan */
-            margin-bottom: 25px;
+            gap: 20px; 
+            margin-bottom: 30px;
         }
-        .logo-container img {
-            height: 90px; /* Tinggi seragam agar rapi */
-            width: auto;
+        
+        /* Frame "Squircle" ala aplikasi iPhone */
+        .logo-wrapper {
+            background: rgba(255, 255, 255, 0.85); /* Putih bersih transparan */
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            width: 85px; 
+            height: 85px;
+            padding: 12px; /* Memberi ruang agar logo tidak mentok pinggir */
+            border-radius: 22px; /* Lengkungan khas Apple */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.9); /* Garis pinggir kaca mengkilap */
+            box-shadow: 
+                0 10px 20px rgba(0, 0, 0, 0.04), /* Bayangan luar jatuh */
+                inset 0 1px 2px rgba(255, 255, 255, 1); /* Pantulan cahaya dalam */
+            transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1); /* Transisi super smooth */
+        }
+
+        .logo-wrapper:hover {
+            transform: translateY(-6px) scale(1.03); /* Efek melayang elegan saat dihover */
+            box-shadow: 
+                0 15px 30px rgba(0, 0, 0, 0.08), 
+                inset 0 1px 2px rgba(255, 255, 255, 1);
+        }
+
+        .logo-wrapper img {
+            width: 100%;
+            height: 100%;
             object-fit: contain;
-            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.05)); /* Sedikit bayangan agar menyatu dengan background */
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.06)); /* Sedikit depth pada logonya sendiri */
         }
+        /* ------------------------------------------- */
 
         /* Typography */
         h1 { text-align: center; margin-bottom: 5px; font-size: 32px; font-weight: 700; letter-spacing: -0.5px; }
@@ -265,10 +293,14 @@
 
 <div class="container">
     
-    <!-- Penempatan Dua Logo Terpusat -->
+    <!-- Penempatan Dua Logo Ala Ikon iOS -->
     <div class="logo-container">
-        <img src="mafaza.png" alt="Logo Masjid Fatimatuzzahra">
-        <img src="par.png" alt="Logo PAR MAFAZA">
+        <div class="logo-wrapper">
+            <img src="mafaza.png" alt="Logo Masjid Fatimatuzzahra">
+        </div>
+        <div class="logo-wrapper">
+            <img src="par.png" alt="Logo PAR MAFAZA">
+        </div>
     </div>
 
     <h1>Sistem Database Penilaian</h1>
