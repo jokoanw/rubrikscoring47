@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Penilaian FISCOM MAFAZA</title>
+    <title>Penilaian FISCOM MAFAZA 2026</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     
@@ -49,6 +49,21 @@
             border-radius: 24px; 
             border: 1px solid var(--glass-border);
             box-shadow: var(--glass-shadow); 
+        }
+
+        /* --- PENGATURAN LOGO MAFAZA & PAR --- */
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 25px; /* Jarak antara logo kiri dan kanan */
+            margin-bottom: 25px;
+        }
+        .logo-container img {
+            height: 90px; /* Tinggi seragam agar rapi */
+            width: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.05)); /* Sedikit bayangan agar menyatu dengan background */
         }
 
         /* Typography */
@@ -234,7 +249,7 @@
         .leaderboard h2 { margin-top: 0; font-size: 22px; font-weight: 700; }
         .leaderboard .table-wrapper { background: rgba(255,255,255,0.7); border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
 
-        /* Footer Credit Tuan Afdhi */
+        /* Footer Credit yang Elegan */
         .footer-credit {
             text-align: center;
             margin-top: 40px;
@@ -249,6 +264,13 @@
 <body>
 
 <div class="container">
+    
+    <!-- Penempatan Dua Logo Terpusat -->
+    <div class="logo-container">
+        <img src="mafaza.png" alt="Logo Masjid Fatimatuzzahra">
+        <img src="par.png" alt="Logo PAR MAFAZA">
+    </div>
+
     <h1>Sistem Database Penilaian</h1>
     <h3>Fattimatuzzahra Islamic Competition (FISCOM)</h3>
     
@@ -257,7 +279,7 @@
     </div>
     
     <p style="text-align: center; font-size: 12px; color: var(--danger); font-weight: 600; margin-top: -15px; margin-bottom: 30px;">
-        Terjadi Kendala Web, Hubungi Afdhi
+        Terjadi Kendala Web? Hubungi Panitia
     </p> 
 
     <div class="juri-selector-container">
@@ -341,7 +363,7 @@
         </div>
     </div>
     
-    <!-- Footer Credit yang Elegan -->
+    <!-- Footer Credit -->
     <div class="footer-credit">
         Hak Cipta &copy; 2026 FISCOM. Sistem oleh Afdhi Abdilah.
     </div>
